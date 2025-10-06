@@ -140,10 +140,10 @@ true "use_ppcross_x64_maybe: $use_ppcross_x64_maybe"
 
 if [ "$TARGET_SYSTEM" = "WINDOWS" ]; then
   # shellcheck disable=SC2086
-  lazbuild -B "tmp_src/WhonixInstaller.lpr" --cpu=x86_64 --os=win64 $use_ppcross_x64_maybe
+  lazbuild --lazarusdir=/usr/lib/lazarus/4.0 -B "tmp_src/WhonixInstaller.lpr" --cpu=x86_64 --os=win64 $use_ppcross_x64_maybe
 elif [ "$TARGET_SYSTEM" = "LINUX" ]; then
   # shellcheck disable=SC2086
-  lazbuild -B "tmp_src/WhonixInstaller.lpr" --ws=qt5 --cpu=x86_64 --os=linux $use_ppcross_x64_maybe
+  lazbuild --lazarusdir=/usr/lib/lazarus/4.0 -B "tmp_src/WhonixInstaller.lpr" --ws=qt5 --cpu=x86_64 --os=linux $use_ppcross_x64_maybe
 fi
 
 ## 6) append Whonix OVA to WhonixInstaller.exe
