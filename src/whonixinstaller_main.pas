@@ -55,7 +55,7 @@ type
     procedure TabSheetConfigurationContextPopup(Sender: TObject;
       MousePos: TPoint; var Handled: boolean);
   private
-    IsDebugMode: boolean;
+    DebugMode: boolean;
     UnpackPath: string;
 
     procedure InstallationBuildIn;
@@ -195,11 +195,16 @@ procedure TInstallerForm.FormCreate(Sender: TObject);
 var
   ResourceStream: TResourceStream;
 begin
-  IsDebugMode := False;
-  if Application.HasOption(COMMANDLINE_OPTION_DEBUG) then
+  DebugMode := Application.HasOption(COMMANDLINE_OPTION_DEBUG);
+  if DebugMode then
   begin
-    IsDebugMode := True;
     InstallerForm.Caption := InstallerForm.Caption + ' [DEBUG MODE]';
+    MemoOutput.Lines.Append('Info: installer is running in debug mode.');
+  end
+  else
+  begin
+    MemoOutput.Lines.Append('Info: installer is running in normal mode.');
+    MemoOutput.Lines.Append('Info: append "--debug" to start in debug mode.');
   end;
 
   PageControl.ShowTabs := False;
@@ -256,7 +261,7 @@ end;
 
 procedure TInstallerForm.FormDestroy(Sender: TObject);
 begin
-  if not IsDebugMode then
+  if not DebugMode then
   begin
     DeleteDirectory(UnpackPath, False);
   end;
@@ -294,7 +299,7 @@ begin
     ButtonCancel.Caption := 'Finish';
     ButtonCancel.Enabled := True;
 
-    if IsDebugMode then
+    if DebugMode then
     begin
       MemoOutput.Parent := TabSheetComplete;
       MemoOutput.Show;
@@ -465,13 +470,6 @@ const
 var
   i: integer;
 begin
-  // deprecated??? ---------------------->
-  if not InstallerForm.Showing then
-  begin
-    InstallerForm.Show;
-  end;
-  // ------------------------------------<
-
   if (Step >= 0) and (Step <= MAX_STEPS) then
   begin
     ProgressBar.Position := Step;

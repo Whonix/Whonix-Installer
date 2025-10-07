@@ -40,7 +40,7 @@ end;
 
 function EnsureExePath(var TargetPath: string; DefaultPath: string): boolean;
 var
-  filename: string;
+  Filename: string;
   sl: TStringList;
 begin
   if FileExists(TargetPath) then
@@ -54,32 +54,32 @@ begin
     Exit(True);
   end;
 
-  filename := ExtractFileName(DefaultPath);
-  TargetPath := FindDefaultExecutablePath(filename);
+  Filename := ExtractFileName(DefaultPath);
+  TargetPath := FindDefaultExecutablePath(Filename);
   if FileExists(TargetPath) then
   begin
     Exit(True);
   end;
 
   sl := TStringList.Create;
-  {$IFDEF WINDOWS}
-  Execute('where /r C:\ ' + filename, sl);
-  {$ELSE}
-  Execute('which ' + filename, sl);
-  {$ENDIF}
+  try
+    {$IFDEF WINDOWS}
+    Execute('where /r C:\ ' + Filename, sl);
+    {$ELSE}
+    Execute('which ' + Filename, sl);
+    {$ENDIF}
 
-  if (sl.Count > 0) and FileExists(sl.Strings[0]) then
-  begin
-    TargetPath := sl.Strings[0];
-    Result := True;
-  end
-  else
-  begin
+    if (sl.Count > 0) and FileExists(sl.Strings[0]) then
+    begin
+      TargetPath := sl.Strings[0];
+      Exit(True);
+    end;
+
     TargetPath := '';
-    Result := False;
+    Exit(False);
+  finally
+    sl.Free;
   end;
-
-  sl.Free;
 end;
 
 procedure Execute(CommandLine: string; Output: TStrings);
@@ -144,10 +144,12 @@ end;
 procedure StreamSaveToFile(Stream: TStream; FileName: string; Output: TStrings);
 
   procedure CopyUnblocked(FromStream, ToStream: TStream);
+  const
+    BYTE_COUNT = 1024 * 1024;
   begin
-    while FromStream.Position + 1024 * 1024 < FromStream.Size do
+    while FromStream.Position + BYTE_COUNT < FromStream.Size do
     begin
-      ToStream.CopyFrom(FromStream, 1024 * 1024);
+      ToStream.CopyFrom(FromStream, BYTE_COUNT);
       Application.ProcessMessages;
     end;
     ToStream.CopyFrom(FromStream, FromStream.Size - FromStream.Position);
