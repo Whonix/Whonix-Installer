@@ -13,7 +13,7 @@
         <ExecutionLevel Value="requireAdministrator"/>
       </XPManifest>
       <Icon Value="0"/>
-      <Resources Count="8">
+      <Resources Count="10">
         <Resource_0 FileName="../WhonixInstallerBannerLinux.jpg" Type="RCDATA" ResourceName="BANNERLINUX"/>
         <Resource_1 FileName="../WhonixInstallerBannerWindows.jpg" Type="RCDATA" ResourceName="BANNERWINDOWS"/>
         <Resource_2 FileName="../COPYING" Type="RCDATA" ResourceName="LICENSE"/>
@@ -22,6 +22,8 @@
         <Resource_5 FileName="../DUMMY_RES_FILE" Type="RCDATA" ResourceName="VCREDIST"/>
         <Resource_6 FileName="../DUMMY_RES_FILE" Type="RCDATA" ResourceName="VBOX"/>
         <Resource_7 FileName="../DUMMY_RES_FILE" Type="RCDATA" ResourceName="STARTER"/>
+        <Resource_8 FileName="../DisableHyperV.bat" Type="RCDATA" ResourceName="DISABLEHYPERV"/>
+        <Resource_9 FileName="../UndoDisableHyperV.bat" Type="RCDATA" ResourceName="UNDODISABLEHYPERV"/>
       </Resources>
     </General>
     <VersionInfo>

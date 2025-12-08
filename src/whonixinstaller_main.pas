@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ComCtrls, StdCtrls,
-  Arrow, ExtCtrls, Types, StrUtils, FileUtil, IniFiles, WhonixUtils;
+  Arrow, ExtCtrls, Types, StrUtils, FileUtil, IniFiles, LCLIntf, WhonixUtils;
 
 type
 
@@ -19,16 +19,37 @@ type
     CheckBoxLicense: TCheckBox;
     CheckBoxOutput: TCheckBox;
     ImageBanner: TImage;
-    LabelConfiguration: TLabel;
+    LabelRecommendReboot: TLabel;
+    LabelConfigHyperV: TLabel;
+    LabelConfigHyperVAlternatives: TLabel;
+    LabelConfigHyperVAltKicksecureUSB: TLabel;
+    LabelConfigHyperVAltLinuxHost: TLabel;
+    LabelConfigHyperVAltWhonixHost: TLabel;
+    LabelConfigHyperVDesc: TLabel;
+    LabelConfigHyperVLinkGreenTurtle: TLabel;
+    LabelConfigHyperVLinkHostOS: TLabel;
+    LabelConfigHyperVLinkKicksecure: TLabel;
+    LabelConfigHyperVLinkUSBInstall: TLabel;
+    LabelConfigHyperVLinkWhonixHost: TLabel;
+    LabelConfigHyperVNotes: TLabel;
+    LabelConfigHyperVNotesNotRoot: TLabel;
+    LabelConfigHyperVNotesRoot: TLabel;
+    LabelConfigHyperVNotesSecurity: TLabel;
+    LabelConfigHyperVNotesUsability: TLabel;
+    LabelConfigNoneDesc: TLabel;
+    LabelComplete: TLabel;
+    LabelCompleteDesc: TLabel;
     LabelConfigFullDesc: TLabel;
     LabelConfigMinimalDesc: TLabel;
-    LabelInstallation: TLabel;
-    LabelComplete: TLabel;
-    LabelLicenseDesc: TLabel;
-    LabelLicense: TLabel;
+    LabelConfiguration: TLabel;
     LabelConfigurationDesc: TLabel;
+    LabelHyperVDisableDesc: TLabel;
+    LabelHyperVDoNothingDesc: TLabel;
+    LabelHyperVReEnableDesc: TLabel;
+    LabelInstallation: TLabel;
     LabelInstallationDesc: TLabel;
-    LabelCompleteDesc: TLabel;
+    LabelLicense: TLabel;
+    LabelLicenseDesc: TLabel;
     MemoLicense: TMemo;
     MemoOutput: TMemo;
     PageControl: TPageControl;
@@ -36,12 +57,18 @@ type
     PanelStatus: TPanel;
     ProgressBar: TProgressBar;
     RadioButtonConfigFull: TRadioButton;
+    RadioButtonConfigNone: TRadioButton;
     RadioButtonConfigMinimal: TRadioButton;
+    RadioButtonHyperVDisable: TRadioButton;
+    RadioButtonHyperVDoNothing: TRadioButton;
+    RadioButtonHyperVReEnable: TRadioButton;
+    HyperVScrollBox: TScrollBox;
     SelectDirectoryDialog: TSelectDirectoryDialog;
-    TabSheetConfiguration: TTabSheet;
-    TabSheetLicense: TTabSheet;
-    TabSheetInstallation: TTabSheet;
     TabSheetComplete: TTabSheet;
+    TabSheetConfiguration: TTabSheet;
+    TabSheetHyperV: TTabSheet;
+    TabSheetInstallation: TTabSheet;
+    TabSheetLicense: TTabSheet;
     procedure ButtonBackClick(Sender: TObject);
     procedure ButtonCancelClick(Sender: TObject);
     procedure ButtonNextClick(Sender: TObject);
@@ -50,7 +77,11 @@ type
     procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
-    procedure LabelCompleteDescClick(Sender: TObject);
+    procedure LabelConfigHyperVLinkGreenTurtleClick(Sender: TObject);
+    procedure LabelConfigHyperVLinkHostOSClick(Sender: TObject);
+    procedure LabelConfigHyperVLinkKicksecureClick(Sender: TObject);
+    procedure LabelConfigHyperVLinkUSBInstallClick(Sender: TObject);
+    procedure LabelConfigHyperVLinkWhonixHostClick(Sender: TObject);
     procedure PageControlChange(Sender: TObject);
     procedure TabSheetConfigurationContextPopup(Sender: TObject;
       MousePos: TPoint; var Handled: boolean);
@@ -58,10 +89,13 @@ type
     DebugMode: boolean;
     UnpackPath: string;
 
+    function InstallationBuildInVBox: boolean;
+    function InstallationBuildInStarter: boolean;
+    function InstallationBuildInHyperV: boolean;
     procedure InstallationBuildIn;
     procedure InstallationScript(Script: TStrings);
     procedure Installation;
-    procedure SetNextStatus(Step: integer; Status: string; Output: TStrings = nil);
+    procedure SetNextStatus(Step: integer; Status: string; Output: TStrings = Nil);
     procedure ResourceToFile(ResourceName, FileName: string; Output: TStrings);
   end;
 
@@ -75,65 +109,17 @@ implementation
 
 {$R *.lfm}
 
-(*
-
-procedure EnsureValidExePath(var TargetPath: string; DefaultPath: string);
-var
-  filename: string;
-  sl: TStringList;
-begin
-  if FileExists(TargetPath) then
-  begin
-    Exit;
-  end;
-
-  if (TargetPath <> DefaultPath) and FileExists(DefaultPath) then
-  begin
-    TargetPath := DefaultPath;
-    Exit;
-  end;
-
-  filename := ExtractFileName(DefaultPath);
-  TargetPath := FindDefaultExecutablePath(filename);
-  if FileExists(TargetPath) then
-  begin
-    Exit;
-  end;
-
-  sl := TStringList.Create;
-  {$IFDEF WINDOWS}
-  Execute('where /r C:\ ' + filename, sl);
-  {$ELSE}
-  Execute('which ' + filename, sl);
-  {$ENDIF}
-
-  if (sl.Count > 0) and FileExists(sl.Strings[0]) then
-  begin
-    TargetPath := sl.Strings[0];
-  end
-  else
-  begin
-    TargetPath := '';
-  end;
-
-  sl.Free;
-end;
-
-*)
-
 { TInstallerForm }
 
 procedure TInstallerForm.CheckBoxOutputChange(Sender: TObject);
 begin
   if CheckBoxOutput.Checked then
   begin
-    //InstallerForm.Height := 500;
     MemoOutput.Show;
   end
   else
   begin
     MemoOutput.Hide;
-    //InstallerForm.Height := CheckBoxOutput.Top + CheckBoxOutput.Height + 10;
   end;
 end;
 
@@ -193,7 +179,7 @@ end;
 
 procedure TInstallerForm.FormCreate(Sender: TObject);
 var
-  ResourceStream: TResourceStream;
+  ResourceStream: TResourceStream = Nil;
 begin
   DebugMode := Application.HasOption(COMMANDLINE_OPTION_DEBUG);
   if DebugMode then
@@ -216,11 +202,12 @@ begin
   ImageBanner.Picture.LoadFromResourceName(Hinstance, 'BANNERWINDOWS');
   {$ELSE}
   ImageBanner.Picture.LoadFromResourceName(Hinstance, 'BANNERLINUX');
+  TabSheetHyperV.TabVisible := False;
   {$ENDIF}
 
   ResourceStream := TResourceStream.Create(HInstance, 'LICENSE', RT_RCDATA);
   MemoLicense.Lines.LoadFromStream(ResourceStream);
-  ResourceStream.Free;
+  FreeAndNil(ResourceStream);
 
   MemoOutput.Hide;
 
@@ -267,9 +254,29 @@ begin
   end;
 end;
 
-procedure TInstallerForm.LabelCompleteDescClick(Sender: TObject);
+procedure TInstallerForm.LabelConfigHyperVLinkGreenTurtleClick(Sender: TObject);
 begin
+  OpenURL(LabelConfigHyperVLinkGreenTurtle.Caption);
+end;
 
+procedure TInstallerForm.LabelConfigHyperVLinkHostOSClick(Sender: TObject);
+begin
+   OpenURL(LabelConfigHyperVLinkHostOS.Caption);
+end;
+
+procedure TInstallerForm.LabelConfigHyperVLinkKicksecureClick(Sender: TObject);
+begin
+  OpenURL(LabelConfigHyperVLinkKicksecure.Caption);
+end;
+
+procedure TInstallerForm.LabelConfigHyperVLinkUSBInstallClick(Sender: TObject);
+begin
+  OpenURL(LabelConfigHyperVLinkUSBInstall.Caption);
+end;
+
+procedure TInstallerForm.LabelConfigHyperVLinkWhonixHostClick(Sender: TObject);
+begin
+  OpenURL(LabelConfigHyperVLinkWhonixHost.Caption);
 end;
 
 procedure TInstallerForm.PageControlChange(Sender: TObject);
@@ -281,6 +288,13 @@ begin
     ButtonCancel.Enabled := True;
   end
   else if PageControl.ActivePage = TabSheetConfiguration then
+  begin
+    ButtonBack.Enabled := True;
+    ButtonNext.Caption := 'Next >';
+    ButtonNext.Enabled := True;
+    ButtonCancel.Enabled := True;
+  end
+  else if PageControl.ActivePage = TabSheetHyperV then
   begin
     ButtonBack.Enabled := True;
     ButtonNext.Caption := 'Execute';
@@ -313,105 +327,297 @@ begin
 
 end;
 
-procedure TInstallerForm.InstallationBuildIn;
+function TInstallerForm.InstallationBuildInVBox: boolean;
 const
   {$IFDEF WINDOWS}
   defaultVBoxManagePath = 'C:\Program Files\Oracle\VirtualBox\VBoxManage.exe';
-  defaultWhonixStarterPath = 'C:\Program Files\WhonixStarter\WhonixStarter.exe';
   {$ELSE}
   defaultVBoxManagePath = '/usr/bin/VBoxManage';
+  {$ENDIF}
+var
+  CurrentVBoxManagePath: string = '';
+  Output: TStringList = Nil;
+  ResourceStream: TResourceStream = Nil;
+  ExeFileStream: TFileStream = Nil;
+  IniFile: TIniFile = Nil;
+  ExecuteSuccess: boolean = False;
+  EndResult: boolean = True;
+begin
+  try
+    if (not RadioButtonConfigFull.Checked)
+      and (not RadioButtonConfigMinimal.Checked) then Exit(True);
+
+    SetNextStatus(1, 'Checking if VirtualBox is already installed...');
+    if not EnsureExePath(CurrentVBoxManagePath, defaultVBoxManagePath) then
+    begin
+      {$IFDEF WINDOWS}
+      SetNextStatus(2, 'Unpacking VC++ Redistributable installer...');
+      try
+        ResourceToFile('VCREDIST', UnpackPath + 'vcredist.exe',
+          InstallerForm.MemoOutput.Lines);
+      except
+        SetNextStatus(-1,
+          'VC++ Redistributable installer could not be unpacked.');
+        EndResult := False;
+        Exit(False);
+      end;
+
+      SetNextStatus(3, 'Installing VC++ Redistributable...');
+      try
+        ExecuteSuccess := Execute('cmd.exe /c ""' + UnpackPath
+          + 'vcredist.exe"" /install /quiet /norestart',
+          InstallerForm.MemoOutput.Lines);
+        if ExecuteSuccess = False then
+        begin
+          SetNextStatus(-1, 'VC++ Redistributable installation failed.');
+          EndResult := False;
+          Exit(False);
+        end;
+      except
+        SetNextStatus(-1,
+          'A critical error occurred while installing the '
+          + 'VC++ Redistributable.');
+        EndResult := False;
+        Exit(False);
+      end;
+
+      SetNextStatus(4, 'Unpacking VirtualBox installer...');
+      try
+        ResourceToFile('VBOX', UnpackPath + 'vbox.exe',
+          InstallerForm.MemoOutput.Lines);
+      except
+        SetNextStatus(-1, 'VirtualBox installer could not be unpacked.');
+        EndResult := False;
+        Exit(False);
+      end;
+
+      SetNextStatus(5, 'Installing VirtualBox...');
+      try
+        ExecuteSuccess := Execute('cmd.exe /c ""' + UnpackPath
+          + 'vbox.exe"" --silent --ignore-reboot',
+          InstallerForm.MemoOutput.Lines);
+        if ExecuteSuccess = False then
+        begin
+          SetNextStatus(-1, 'VirtualBox installation failed.');
+          EndResult := False;
+          Exit(False);
+        end;
+      except
+        SetNextStatus(-1,
+          'A critical error occurred while installing VirtualBox.');
+        EndResult := False;
+        Exit(False);
+      end;
+      {$ENDIF}
+
+      if not EnsureExePath(CurrentVBoxManagePath, defaultVBoxManagePath) then
+      begin
+        SetNextStatus(-1, 'VirtualBox could not be installed.');
+        EndResult := False;
+        Exit(False);
+      end;
+    end;
+
+    SetNextStatus(6, 'Detecting already existing Whonix VMs.');
+    Output := TStringList.Create;
+    try
+      Execute(CurrentVBoxManagePath + ' list vms', Output);
+    except
+      SetNextStatus(-1,
+        'A critical error occurred while getting a list of VMs '
+        + 'from VirtualBox.');
+      EndResult := False;
+      Exit(False);
+    end;
+    InstallerForm.MemoOutput.Lines.AddStrings(Output);
+
+    // TODO: install/repair if only one of both VMs is missing?
+    if not ContainsStr(Output.Text, 'Whonix-Gateway-Xfce') and not
+      ContainsStr(Output.Text, 'Whonix-Workstation-Xfce') then
+    begin
+      SetNextStatus(7, 'Unpacking Whonix ova...');
+      ExeFileStream := TFileStream.Create(Application.ExeName, fmOpenRead);
+      ResourceStream := TResourceStream.Create(HInstance, 'OVAINFO',
+        RT_RCDATA);
+      IniFile := TIniFile.Create(ResourceStream);
+      ExeFileStream.Position := ExeFileStream.Size
+        - IniFile.ReadInt64('general', 'size', 0);
+      FreeAndNil(IniFile);
+      try
+        StreamSaveToFile(ExeFileStream, UnpackPath + 'whonix.ova',
+          InstallerForm.MemoOutput.Lines);
+      except
+        SetNextStatus(-1, 'Failed to unpack Whonix ova.');
+        EndResult := False;
+        Exit(False);
+      end;
+      FreeAndNil(ResourceStream);
+      FreeAndNil(ExeFileStream);
+
+      SetNextStatus(8, 'Installing Whonix-Gateway and Whonix-Workstation.');
+      try
+        ExecuteSuccess := Execute(CurrentVBoxManagePath + ' import "'
+          + UnpackPath + 'whonix.ova'
+          + '" --vsys 0 --eula accept --vsys 1 --eula accept',
+          InstallerForm.MemoOutput.Lines);
+        if ExecuteSuccess = False then
+        begin
+          SetNextStatus(-1, 'Whonix virtual machine installation failed.');
+          EndResult := False;
+          Exit(False);
+        end;
+      except
+        SetNextStatus(-1,
+          'A critical error occurred while installing Whonix '
+          + 'virtual machines.');
+        EndResult := False;
+        Exit(False);
+      end;
+    end;
+
+    Exit(True);
+  finally
+    if EndResult = False then ButtonCancel.Enabled := True;
+    if Output <> Nil then FreeAndNil(Output);
+    if ResourceStream <> Nil then FreeAndNil(ResourceStream);
+    if ExeFileStream <> Nil then FreeAndNil(ExeFileStream);
+    if IniFile <> Nil then FreeAndNil(IniFile);
+  end;
+end;
+
+function TInstallerForm.InstallationBuildInStarter: boolean;
+const
+  {$IFDEF WINDOWS}
+  defaultWhonixStarterPath = 'C:\Program Files\WhonixStarter\WhonixStarter.exe';
+  {$ELSE}
   defaultWhonixStarterPath = '/usr/bin/WhonixStarter';
   {$ENDIF}
 var
-  CurrentVBoxManagePath, CurrentWhonixStarterPath: string;
-  Output: TStringList;
-  ResourceStream: TResourceStream;
-  ExeFileStream: TFileStream;
+  CurrentWhonixStarterPath: string = '';
+  ExecuteSuccess: boolean = False;
+  EndResult: boolean = True;
 begin
-  SetNextStatus(1, 'Checking if VirtualBox is already installed...');
-  if not EnsureExePath(CurrentVBoxManagePath, defaultVBoxManagePath) then
-  begin
-    {$IFDEF WINDOWS}
-    SetNextStatus(2, 'Unpacking VC++ Redistributable installer...');
-    ResourceToFile('VCREDIST', UnpackPath + 'vcredist.exe', InstallerForm.MemoOutput.Lines);
-
-    SetNextStatus(3, 'Installing VC++ Redistributable...');
-    Execute('cmd.exe /c ""' + UnpackPath + 'vcredist.exe"" /install /quiet /norestart',
-      InstallerForm.MemoOutput.Lines);
-
-    SetNextStatus(4, 'Unpacking VirtualBox installer...');
-    ResourceToFile('VBOX', UnpackPath + 'vbox.exe', InstallerForm.MemoOutput.Lines);
-
-    SetNextStatus(5, 'Installing VirtualBox...');
-    Execute('cmd.exe /c ""' + UnpackPath + 'vbox.exe"" --silent --ignore-reboot',
-      InstallerForm.MemoOutput.Lines);
-    {$ENDIF}
-
-    if not EnsureExePath(CurrentVBoxManagePath, defaultVBoxManagePath) then
+  try
+    if not RadioButtonConfigFull.Checked then
     begin
-      SetNextStatus(-1, 'VirtualBox could not be installed.');
-      ButtonCancel.Enabled := True;
-      Exit;
+      Exit(True);
     end;
-  end;
 
-  SetNextStatus(6, 'Detecting already existing Whonix VMs.');
-  Output := TStringList.Create;
-  Execute(CurrentVBoxManagePath + ' list vms', Output);
-  InstallerForm.MemoOutput.Lines.AddStrings(Output);
-
-  // TODO: install/repair if only one of both VMs is missing?
-  if not ContainsStr(Output.Text, 'Whonix-Gateway-Xfce') and not
-    ContainsStr(Output.Text, 'Whonix-Workstation-Xfce') then
-  begin
-    SetNextStatus(7, 'Unpacking Whonix ova...');
-    ExeFileStream := TFileStream.Create(Application.ExeName, fmOpenRead);
-    ResourceStream := TResourceStream.Create(HInstance, 'OVAINFO', RT_RCDATA);
-    with TIniFile.Create(ResourceStream) do
+    SetNextStatus(9, 'Checking if Whonix-Starter is already installed...');
+    if not EnsureExePath(CurrentWhonixStarterPath,
+      defaultWhonixStarterPath) then
     begin
-      ExeFileStream.Position := ExeFileStream.Size - ReadInt64('general', 'size', 0);
-      Free;
+      {$IFDEF WINDOWS}
+      SetNextStatus(10, 'Unpacking Whonix-Starter installer...');
+      try
+        ResourceToFile('STARTER', UnpackPath + 'WhonixStarter.msi',
+          InstallerForm.MemoOutput.Lines);
+      except
+        SetNextStatus(-1, 'Whonix-Starter installer could not be unpacked.');
+        EndResult := False;
+        Exit(False);
+      end;
+
+      SetNextStatus(11, 'Installing Whonix-Starter...');
+      try
+        ExecuteSuccess := Execute('msiexec /i "' + UnpackPath + 'WhonixStarter.msi"',
+          InstallerForm.MemoOutput.Lines);
+        if ExecuteSuccess = False then
+        begin
+          SetNextStatus(-1, 'Whonix-Starter installation failed.');
+          EndResult := False;
+          Exit(False);
+        end;
+      except
+        SetNextStatus(-1, 'A critical error occurred while installing Whonix-Starter.');
+        EndResult := False;
+        Exit(False);
+      end;
+      {$ENDIF}
+
+      if not EnsureExePath(CurrentWhonixStarterPath, defaultWhonixStarterPath) then
+      begin
+        SetNextStatus(-1, 'Whonix-Starter could not be installed.');
+        EndResult := False;
+        Exit(False);
+      end;
     end;
-    StreamSaveToFile(ExeFileStream, UnpackPath + 'whonix.ova',
-      InstallerForm.MemoOutput.Lines);
-    ResourceStream.Free;
-    ExeFileStream.Free;
 
-    SetNextStatus(8, 'Installing Whonix-Gateway and Whonix-Workstation.');
-    Execute(CurrentVBoxManagePath + ' import "' + UnpackPath +
-      'whonix.ova' + '" --vsys 0 --eula accept --vsys 1 --eula accept',
-      InstallerForm.MemoOutput.Lines);
+    exit(True);
+  finally
+    if EndResult = False then ButtonCancel.Enabled := True;
   end;
+end;
 
-  Output.Free;
-
-  if RadioButtonConfigMinimal.Checked then
-  begin
-    ButtonNextClick(ButtonNext);
-    Exit;
-  end;
-
-  SetNextStatus(9, 'Checking if Whonix-Starter is already installed...');
-  if not EnsureExePath(CurrentWhonixStarterPath, defaultWhonixStarterPath) then
-  begin
-    {$IFDEF WINDOWS}
-    SetNextStatus(10, 'Unpacking Whonix-Starter installer...');
-    ResourceToFile('STARTER', UnpackPath + 'WhonixStarter.msi', InstallerForm.MemoOutput.Lines);
-
-    SetNextStatus(11, 'Installing Whonix-Starter...');
-    Execute('msiexec /i "' + UnpackPath + 'WhonixStarter.msi"',
-        InstallerForm.MemoOutput.Lines);
-    {$ENDIF}
-
-    if not EnsureExePath(CurrentWhonixStarterPath, defaultWhonixStarterPath) then
+function TInstallerForm.InstallationBuildInHyperV: boolean;
+var
+  ScriptResource: string = '';
+  ScriptFile: string = '';
+  ScriptType: string = '';
+  ExecuteSuccess: boolean = False;
+  EndResult: boolean = True;
+begin
+  try
+    if RadioButtonHyperVDoNothing.Checked then
     begin
-      SetNextStatus(-1, 'Whonix-Starter could not be installed.');
-      ButtonCancel.Enabled := True;
-      Exit;
+      exit(True);
     end;
-  end;
 
-  SetNextStatus(12, 'Installation completed!');
+    if RadioButtonHyperVDisable.Checked then
+    begin
+      ScriptResource := 'DISABLEHYPERV';
+      ScriptFile := 'DisableHyperV.bat';
+      ScriptType := 'Hyper-V disable';
+    end
+    else
+    begin
+      ScriptResource := 'UNDODISABLEHYPERV';
+      ScriptFile := 'UndoDisableHyperV.bat';
+      ScriptType := 'Hyper-V undo-disable';
+    end;
+
+    SetNextStatus(12, 'Unpacking ' + ScriptType + ' script.');
+
+    try
+      ResourceToFile(ScriptResource, UnpackPath + ScriptFile, InstallerForm.MemoOutput.Lines);
+    except
+      SetNextStatus(-1, '''' + ScriptFile + ''' could not be unpacked.');
+      EndResult := False;
+      Exit(False);
+    end;
+
+    SetNextStatus(13, 'Running ' + ScriptType + ' script.');
+    try
+      ExecuteSuccess := Execute('cmd.exe /c ""' + UnpackPath + ScriptFile
+        + '"" /q', InstallerForm.MemoOutput.Lines);
+      if ExecuteSuccess = False then
+      begin
+        SetNextStatus(-1, 'The ' + ScriptType + ' script failed.');
+        EndResult := False;
+        Exit(False);
+      end;
+    except
+      SetNextStatus(-1, 'A critical error occurred while running the ' + ScriptType + '.');
+      EndResult := False;
+      Exit(False);
+    end;
+
+    exit(True);
+  finally
+    if EndResult = False then ButtonCancel.Enabled := True;
+  end;
+end;
+
+procedure TInstallerForm.InstallationBuildIn;
+begin
+  if not InstallationBuildInVBox then Exit;
+  if not InstallationBuildInStarter then Exit;
+  if not InstallationBuildInHyperV then Exit;
+  SetNextStatus(14, 'Installation completed!');
+  if RadioButtonHyperVDoNothing.Checked then
+  begin
+    LabelRecommendReboot.Visible := False;
+  end;
   ButtonNextClick(ButtonNext);
 end;
 
@@ -464,9 +670,9 @@ begin
 end;
 
 procedure TInstallerForm.SetNextStatus(Step: integer; Status: string;
-  Output: TStrings = nil);
+  Output: TStrings = Nil);
 const
-  MAX_STEPS = 12;
+  MAX_STEPS = 14;
 var
   i: integer;
 begin
@@ -483,7 +689,7 @@ begin
 
   MemoOutput.Append(PanelStatus.Caption);
 
-  if Output <> nil then
+  if Output <> Nil then
   begin
     for i := 0 to Output.Count - 1 do
     begin
@@ -509,6 +715,7 @@ begin
   if FindResource(HInstance, ResourceName, RT_RCDATA) = 0 then
   begin
     Output.Append('Error: could not find resource ' + ResourceName);
+    raise EPathNotFoundException.Create ('Resource not found');
   end;
 
   ResourceStream := TResourceStream.Create(HInstance, ResourceName, RT_RCDATA);

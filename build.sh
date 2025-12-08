@@ -92,22 +92,35 @@ save" | xmllint --shell "tmp_src/WhonixInstaller.lpi"
 
 ## 4.2) update resources in lpi file
 
+## Unfortunately lazbuild as of Debian Trixie does not seem to be able to
+## resolve relative paths in resource definitions. Thus we have to fill in the
+## absolute paths for all resources.
+echo -e "\
+cd //Resources/Resource_0[@ResourceName='BANNERLINUX']/@FileName
+set $(realpath WhonixInstallerBannerLinux.jpg)
+cd //Resources/Resource_1[@ResourceName='BANNERWINDOWS']/@FileName
+set $(realpath WhonixInstallerBannerWindows.jpg)
+cd //Resources/Resource_2[@ResourceName='LICENSE']/@FileName
+set $(realpath "$FILE_LICENSE")
+save" | xmllint --shell "tmp_src/WhonixInstaller.lpi"
 if [ "$TARGET_SYSTEM" = "WINDOWS" ]; then
   echo -e "\
-  cd //Resources/Resource_2[@ResourceName='LICENSE']/@FileName
-  set $(realpath "$FILE_LICENSE")
+  cd //Resources/Resource_4[@ResourceName='OVAINFO']/@FileName
+  set $(realpath WhonixOvaInfo.ini)
   cd //Resources/Resource_5[@ResourceName='VCREDIST']/@FileName
   set $(realpath "$FILE_VCREDIST_INST_EXE")
   cd //Resources/Resource_6[@ResourceName='VBOX']/@FileName
   set $(realpath "$FILE_VBOX_INST_EXE")
   cd //Resources/Resource_7[@ResourceName='STARTER']/@FileName
   set $(realpath "$FILE_WHONIX_STARTER_MSI")
+  cd //Resources/Resource_8[@ResourceName='DISABLEHYPERV']/@FileName
+  set $(realpath DisableHyperV.bat)
+  cd //Resources/Resource_9[@ResourceName='UNDODISABLEHYPERV']/@FileName
+  set $(realpath UndoDisableHyperV.bat)
   save" | xmllint --shell "tmp_src/WhonixInstaller.lpi"
 fi
 if [ "$TARGET_SYSTEM" = "LINUX" ]; then
   echo -e "\
-  cd //Resources/Resource_2[@ResourceName='LICENSE']/@FileName
-  set $(realpath "$FILE_LICENSE")
   cd //Resources/Resource_3[@ResourceName='SCRIPT']/@FileName
   set $(realpath "$FILE_CLI_INSTALLER_SCRIPT")
   save" | xmllint --shell "tmp_src/WhonixInstaller.lpi"

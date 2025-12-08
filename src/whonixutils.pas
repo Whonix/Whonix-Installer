@@ -17,7 +17,7 @@ uses
 
 function AppDiskGetFreeSpace(const fn: string): int64;
 function EnsureExePath(var TargetPath: string; DefaultPath: string): boolean;
-procedure Execute(CommandLine: string; Output: TStrings);
+function Execute(CommandLine: string; Output: TStrings): boolean;
 procedure StreamSaveToFile(Stream: TStream; FileName: string; Output: TStrings);
 //procedure CopyUnblocked(FromStream, ToStream: TStream);
 
@@ -82,7 +82,7 @@ begin
   end;
 end;
 
-procedure Execute(CommandLine: string; Output: TStrings);
+function Execute(CommandLine: string; Output: TStrings): boolean;
 const
   BUFSIZE = 2048;
 var
@@ -91,18 +91,26 @@ var
   BytesRead: longint;
   Running: boolean;
   Buffer: array[1..BUFSIZE] of byte;
+  DidSucceed: boolean;
 begin
-  Process := TProcess.Create(nil);
+  assert(Output <> Nil);
+
+  Process := TProcess.Create(Nil);
   Process.CommandLine := CommandLine;
   Process.Options := Process.Options + [poNoConsole];
 
-  if Output <> nil then
-  begin
-    Process.Options := Process.Options + [poUsePipes, poStderrToOutPut];
-    Output.Append('Execute: ' + Process.CommandLine);
-  end;
+  Process.Options := Process.Options + [poUsePipes, poStderrToOutPut];
+  Output.Append('Execute: ' + Process.CommandLine);
 
-  Process.Execute;
+  try
+    Process.Execute;
+  except
+    on E: Exception do
+    begin
+      Output.Append('Could not execute command!');
+      raise E;
+    end;
+  end;
 
   StrStream := TStringStream.Create;
 
@@ -121,24 +129,32 @@ begin
     until (BytesRead = 0) and not Running;
   except
     on E: Exception do
-      if Output <> nil then
-      begin
-        Output.Append('Exception: ' + E.Message);
-      end;
+    begin
+      Output.Append('Exception: ' + E.Message);
+      raise E;
+    end
   end;
 
-  if Output <> nil then
+  Output.Append('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');
+  if StrStream.Size > 0 then
   begin
-    Output.Append('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');
-    if StrStream.Size > 0 then
-    begin
-      Output.Append(StrStream.DataString);
-    end;
-    Output.Append('<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<');
+    Output.Append(StrStream.DataString);
   end;
+  Output.Append('<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<');
 
   StrStream.Free;
+
+  if Process.ExitStatus = 0 then
+  begin
+    DidSucceed := True;
+  end
+  else
+  begin
+    DidSucceed := False;
+  end;
+
   Process.Free;
+  Exit(DidSucceed);
 end;
 
 procedure StreamSaveToFile(Stream: TStream; FileName: string; Output: TStrings);
