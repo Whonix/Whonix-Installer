@@ -19,6 +19,7 @@ type
     CheckBoxLicense: TCheckBox;
     CheckBoxOutput: TCheckBox;
     ImageBanner: TImage;
+    LabelHyperVSelectOption: TLabel;
     LabelRecommendReboot: TLabel;
     LabelConfigHyperV: TLabel;
     LabelConfigHyperVAlternatives: TLabel;
@@ -60,7 +61,7 @@ type
     RadioButtonConfigNone: TRadioButton;
     RadioButtonConfigMinimal: TRadioButton;
     RadioButtonHyperVDisable: TRadioButton;
-    RadioButtonHyperVDoNothing: TRadioButton;
+    RadioButtonHyperVKeepCurrent: TRadioButton;
     RadioButtonHyperVReEnable: TRadioButton;
     HyperVScrollBox: TScrollBox;
     SelectDirectoryDialog: TSelectDirectoryDialog;
@@ -83,8 +84,9 @@ type
     procedure LabelConfigHyperVLinkUSBInstallClick(Sender: TObject);
     procedure LabelConfigHyperVLinkWhonixHostClick(Sender: TObject);
     procedure PageControlChange(Sender: TObject);
-    procedure TabSheetConfigurationContextPopup(Sender: TObject;
-      MousePos: TPoint; var Handled: boolean);
+    procedure RadioButtonHyperVDisableChange(Sender: TObject);
+    procedure RadioButtonHyperVKeepCurrentChange(Sender: TObject);
+    procedure RadioButtonHyperVReEnableChange(Sender: TObject);
   private
     DebugMode: boolean;
     UnpackPath: string;
@@ -161,6 +163,21 @@ end;
 procedure TInstallerForm.CheckBoxLicenseChange(Sender: TObject);
 begin
   ButtonNext.Enabled := CheckBoxLicense.Checked;
+end;
+
+procedure TInstallerForm.RadioButtonHyperVKeepCurrentChange(Sender: TObject);
+begin
+  if RadioButtonHyperVKeepCurrent.Checked then ButtonNext.Enabled := True;
+end;
+
+procedure TInstallerForm.RadioButtonHyperVDisableChange(Sender: TObject);
+begin
+  if RadioButtonHyperVDisable.Checked then ButtonNext.Enabled := True;
+end;
+
+procedure TInstallerForm.RadioButtonHyperVReEnableChange(Sender: TObject);
+begin
+  if RadioButtonHyperVReEnable.Checked then ButtonNext.Enabled := True;
 end;
 
 procedure TInstallerForm.ButtonBackClick(Sender: TObject);
@@ -298,7 +315,9 @@ begin
   begin
     ButtonBack.Enabled := True;
     ButtonNext.Caption := 'Execute';
-    ButtonNext.Enabled := True;
+    ButtonNext.Enabled := RadioButtonHyperVKeepCurrent.Checked
+      or RadioButtonHyperVDisable.Checked
+      or RadioButtonHyperVReEnable.Checked;
     ButtonCancel.Enabled := True;
   end
   else if PageControl.ActivePage = TabSheetInstallation then
@@ -319,12 +338,6 @@ begin
       MemoOutput.Show;
     end;
   end;
-end;
-
-procedure TInstallerForm.TabSheetConfigurationContextPopup(Sender: TObject;
-  MousePos: TPoint; var Handled: boolean);
-begin
-
 end;
 
 function TInstallerForm.InstallationBuildInVBox: boolean;
@@ -356,10 +369,14 @@ begin
         ResourceToFile('VCREDIST', UnpackPath + 'vcredist.exe',
           InstallerForm.MemoOutput.Lines);
       except
-        SetNextStatus(-1,
-          'VC++ Redistributable installer could not be unpacked.');
-        EndResult := False;
-        Exit(False);
+        on E : Exception do
+        begin
+          SetNextStatus(-1,
+            'VC++ Redistributable installer could not be unpacked.');
+          MemoOutput.Append(E.Message);
+          EndResult := False;
+          Exit(False);
+        end;
       end;
 
       SetNextStatus(3, 'Installing VC++ Redistributable...');
@@ -374,11 +391,15 @@ begin
           Exit(False);
         end;
       except
-        SetNextStatus(-1,
-          'A critical error occurred while installing the '
-          + 'VC++ Redistributable.');
-        EndResult := False;
-        Exit(False);
+        on E : Exception do
+        begin
+          SetNextStatus(-1,
+            'A critical error occurred while installing the '
+            + 'VC++ Redistributable.');
+          MemoOutput.Append(E.Message);
+          EndResult := False;
+          Exit(False);
+        end;
       end;
 
       SetNextStatus(4, 'Unpacking VirtualBox installer...');
@@ -386,9 +407,13 @@ begin
         ResourceToFile('VBOX', UnpackPath + 'vbox.exe',
           InstallerForm.MemoOutput.Lines);
       except
-        SetNextStatus(-1, 'VirtualBox installer could not be unpacked.');
-        EndResult := False;
-        Exit(False);
+        on E : Exception do
+        begin
+          SetNextStatus(-1, 'VirtualBox installer could not be unpacked.');
+          MemoOutput.Append(E.Message);
+          EndResult := False;
+          Exit(False);
+        end;
       end;
 
       SetNextStatus(5, 'Installing VirtualBox...');
@@ -403,10 +428,14 @@ begin
           Exit(False);
         end;
       except
-        SetNextStatus(-1,
-          'A critical error occurred while installing VirtualBox.');
-        EndResult := False;
-        Exit(False);
+        on E : Exception do
+        begin
+          SetNextStatus(-1,
+            'A critical error occurred while installing VirtualBox.');
+          MemoOutput.Append(E.Message);
+          EndResult := False;
+          Exit(False);
+        end;
       end;
       {$ENDIF}
 
@@ -423,11 +452,15 @@ begin
     try
       Execute(CurrentVBoxManagePath + ' list vms', Output);
     except
-      SetNextStatus(-1,
-        'A critical error occurred while getting a list of VMs '
-        + 'from VirtualBox.');
-      EndResult := False;
-      Exit(False);
+      on E : Exception do
+      begin
+        SetNextStatus(-1,
+          'A critical error occurred while getting a list of VMs '
+          + 'from VirtualBox.');
+        MemoOutput.Append(E.Message);
+        EndResult := False;
+        Exit(False);
+      end;
     end;
     InstallerForm.MemoOutput.Lines.AddStrings(Output);
 
@@ -447,9 +480,13 @@ begin
         StreamSaveToFile(ExeFileStream, UnpackPath + 'whonix.ova',
           InstallerForm.MemoOutput.Lines);
       except
-        SetNextStatus(-1, 'Failed to unpack Whonix ova.');
-        EndResult := False;
-        Exit(False);
+        on E : Exception do
+        begin
+          SetNextStatus(-1, 'Failed to unpack Whonix ova.');
+          MemoOutput.Append(E.Message);
+          EndResult := False;
+          Exit(False);
+        end;
       end;
       FreeAndNil(ResourceStream);
       FreeAndNil(ExeFileStream);
@@ -467,11 +504,15 @@ begin
           Exit(False);
         end;
       except
-        SetNextStatus(-1,
-          'A critical error occurred while installing Whonix '
-          + 'virtual machines.');
-        EndResult := False;
-        Exit(False);
+        on E : Exception do
+        begin
+          SetNextStatus(-1,
+            'A critical error occurred while installing Whonix '
+            + 'virtual machines.');
+          MemoOutput.Append(E.Message);
+          EndResult := False;
+          Exit(False);
+        end;
       end;
     end;
 
@@ -513,9 +554,13 @@ begin
         ResourceToFile('STARTER', UnpackPath + 'WhonixStarter.msi',
           InstallerForm.MemoOutput.Lines);
       except
-        SetNextStatus(-1, 'Whonix-Starter installer could not be unpacked.');
-        EndResult := False;
-        Exit(False);
+        on E : Exception do
+        begin
+          SetNextStatus(-1, 'Whonix-Starter installer could not be unpacked.');
+          MemoOutput.Append(E.Message);
+          EndResult := False;
+          Exit(False);
+        end;
       end;
 
       SetNextStatus(11, 'Installing Whonix-Starter...');
@@ -529,9 +574,14 @@ begin
           Exit(False);
         end;
       except
-        SetNextStatus(-1, 'A critical error occurred while installing Whonix-Starter.');
-        EndResult := False;
-        Exit(False);
+        on E : Exception do
+        begin
+          SetNextStatus(-1, 'A critical error occurred while installing '
+            + 'Whonix-Starter.');
+          MemoOutput.Append(E.Message);
+          EndResult := False;
+          Exit(False);
+        end;
       end;
       {$ENDIF}
 
@@ -558,7 +608,7 @@ var
   EndResult: boolean = True;
 begin
   try
-    if RadioButtonHyperVDoNothing.Checked then
+    if RadioButtonHyperVKeepCurrent.Checked then
     begin
       exit(True);
     end;
@@ -581,9 +631,13 @@ begin
     try
       ResourceToFile(ScriptResource, UnpackPath + ScriptFile, InstallerForm.MemoOutput.Lines);
     except
-      SetNextStatus(-1, '''' + ScriptFile + ''' could not be unpacked.');
-      EndResult := False;
-      Exit(False);
+      on E : Exception do
+      begin
+        SetNextStatus(-1, '''' + ScriptFile + ''' could not be unpacked.');
+        MemoOutput.Append(E.Message);
+        EndResult := False;
+        Exit(False);
+      end;
     end;
 
     SetNextStatus(13, 'Running ' + ScriptType + ' script.');
@@ -597,9 +651,14 @@ begin
         Exit(False);
       end;
     except
-      SetNextStatus(-1, 'A critical error occurred while running the ' + ScriptType + '.');
-      EndResult := False;
-      Exit(False);
+      on E : Exception do
+      begin
+        SetNextStatus(-1, 'A critical error occurred while running the '
+          + ScriptType + '.');
+        MemoOutput.Append(E.Message);
+        EndResult := False;
+        Exit(False);
+      end;
     end;
 
     exit(True);
@@ -614,7 +673,7 @@ begin
   if not InstallationBuildInStarter then Exit;
   if not InstallationBuildInHyperV then Exit;
   SetNextStatus(14, 'Installation completed!');
-  if RadioButtonHyperVDoNothing.Checked then
+  if RadioButtonHyperVKeepCurrent.Checked then
   begin
     LabelRecommendReboot.Visible := False;
   end;

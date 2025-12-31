@@ -1,17 +1,18 @@
 object InstallerForm: TInstallerForm
-  Left = 247
+  Left = 214
   Height = 700
-  Top = 190
+  Top = 226
   Width = 642
   BorderIcons = [biSystemMenu, biMinimize]
-  BorderStyle = bsSingle
   Caption = 'Whonix Installer'
   ClientHeight = 700
   ClientWidth = 642
+  Constraints.MinHeight = 700
+  Constraints.MinWidth = 642
+  LCLVersion = '4.0.0.4'
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   OnDestroy = FormDestroy
-  LCLVersion = '3.0.0.3'
   object PanelControl: TPanel
     Left = 10
     Height = 25
@@ -71,21 +72,21 @@ object InstallerForm: TInstallerForm
     Height = 479
     Top = 176
     Width = 622
-    ActivePage = TabSheetHyperV
+    ActivePage = TabSheetLicense
     Align = alClient
     BorderSpacing.Around = 10
-    TabIndex = 2
+    TabIndex = 0
     TabOrder = 1
     OnChange = PageControlChange
     object TabSheetLicense: TTabSheet
       Caption = 'License'
-      ClientHeight = 446
-      ClientWidth = 612
+      ClientHeight = 448
+      ClientWidth = 618
       object MemoLicense: TMemo
         Left = 15
-        Height = 275
-        Top = 118
-        Width = 582
+        Height = 291
+        Top = 106
+        Width = 588
         Align = alClient
         BorderSpacing.Top = 10
         BorderSpacing.Around = 15
@@ -96,9 +97,9 @@ object InstallerForm: TInstallerForm
       end
       object CheckBoxLicense: TCheckBox
         Left = 15
-        Height = 23
-        Top = 408
-        Width = 582
+        Height = 21
+        Top = 412
+        Width = 588
         Align = alBottom
         BorderSpacing.Around = 15
         Caption = 'Yes, I accept the license agreement.'
@@ -107,9 +108,9 @@ object InstallerForm: TInstallerForm
       end
       object LabelLicense: TLabel
         Left = 15
-        Height = 21
+        Height = 17
         Top = 15
-        Width = 582
+        Width = 588
         Align = alTop
         BorderSpacing.Around = 15
         Caption = 'License Agreement'
@@ -119,9 +120,9 @@ object InstallerForm: TInstallerForm
       end
       object LabelLicenseDesc: TLabel
         Left = 15
-        Height = 42
-        Top = 51
-        Width = 582
+        Height = 34
+        Top = 47
+        Width = 588
         Align = alTop
         BorderSpacing.Around = 15
         Caption = 'Please read the following License Agreement. You must accept the terms of this agreement before continuing with the installation.'
@@ -131,14 +132,13 @@ object InstallerForm: TInstallerForm
     end
     object TabSheetConfiguration: TTabSheet
       Caption = 'Configuration'
-      ClientHeight = 446
-      ClientWidth = 612
-      OnContextPopup = TabSheetConfigurationContextPopup
+      ClientHeight = 448
+      ClientWidth = 618
       object LabelConfiguration: TLabel
         Left = 15
-        Height = 21
+        Height = 17
         Top = 15
-        Width = 582
+        Width = 588
         Align = alTop
         BorderSpacing.Around = 15
         Caption = 'Installation Settings'
@@ -148,9 +148,9 @@ object InstallerForm: TInstallerForm
       end
       object LabelConfigurationDesc: TLabel
         Left = 15
-        Height = 42
-        Top = 51
-        Width = 582
+        Height = 34
+        Top = 47
+        Width = 588
         Align = alTop
         BorderSpacing.Around = 15
         Caption = 'Please select one of the installation types listed below and click the "Execute" button to start the installation.'
@@ -159,9 +159,9 @@ object InstallerForm: TInstallerForm
       end
       object RadioButtonConfigFull: TRadioButton
         Left = 15
-        Height = 23
-        Top = 118
-        Width = 582
+        Height = 21
+        Top = 106
+        Width = 588
         Align = alTop
         BorderSpacing.Top = 10
         BorderSpacing.Around = 15
@@ -175,9 +175,9 @@ object InstallerForm: TInstallerForm
       end
       object RadioButtonConfigMinimal: TRadioButton
         Left = 15
-        Height = 23
-        Top = 223
-        Width = 582
+        Height = 21
+        Top = 201
+        Width = 588
         Align = alTop
         BorderSpacing.Top = 10
         BorderSpacing.Around = 15
@@ -188,9 +188,9 @@ object InstallerForm: TInstallerForm
       end
       object LabelConfigFullDesc: TLabel
         Left = 31
-        Height = 42
-        Top = 156
-        Width = 566
+        Height = 34
+        Top = 142
+        Width = 572
         Align = alTop
         BorderSpacing.Left = 16
         BorderSpacing.Around = 15
@@ -200,9 +200,9 @@ object InstallerForm: TInstallerForm
       end
       object LabelConfigMinimalDesc: TLabel
         Left = 31
-        Height = 42
-        Top = 261
-        Width = 566
+        Height = 34
+        Top = 237
+        Width = 572
         Align = alTop
         BorderSpacing.Left = 16
         BorderSpacing.Around = 15
@@ -212,9 +212,9 @@ object InstallerForm: TInstallerForm
       end
       object RadioButtonConfigNone: TRadioButton
         Left = 15
-        Height = 23
-        Top = 328
-        Width = 582
+        Height = 21
+        Top = 296
+        Width = 588
         Align = alTop
         BorderSpacing.Top = 10
         BorderSpacing.Around = 15
@@ -225,9 +225,9 @@ object InstallerForm: TInstallerForm
       end
       object LabelConfigNoneDesc: TLabel
         Left = 31
-        Height = 42
-        Top = 366
-        Width = 566
+        Height = 34
+        Top = 332
+        Width = 572
         Align = alTop
         BorderSpacing.Left = 16
         BorderSpacing.Around = 15
@@ -238,26 +238,26 @@ object InstallerForm: TInstallerForm
     end
     object TabSheetHyperV: TTabSheet
       Caption = 'Hyper-V'
-      ClientHeight = 446
-      ClientWidth = 612
+      ClientHeight = 448
+      ClientWidth = 618
       object HyperVScrollBox: TScrollBox
         Left = 0
-        Height = 446
+        Height = 448
         Top = 0
-        Width = 612
+        Width = 618
         HorzScrollBar.Page = 1
         HorzScrollBar.Visible = False
-        VertScrollBar.Page = 446
+        VertScrollBar.Page = 448
         Align = alClient
         BorderStyle = bsNone
-        ClientHeight = 446
-        ClientWidth = 592
+        ClientHeight = 448
+        ClientWidth = 599
         TabOrder = 0
         object LabelConfigHyperV: TLabel
           Left = 15
-          Height = 21
+          Height = 17
           Top = 15
-          Width = 562
+          Width = 569
           Align = alTop
           BorderSpacing.Around = 15
           Caption = 'Hyper-V Configuration'
@@ -266,9 +266,9 @@ object InstallerForm: TInstallerForm
         end
         object LabelConfigHyperVDesc: TLabel
           Left = 15
-          Height = 63
-          Top = 51
-          Width = 562
+          Height = 51
+          Top = 47
+          Width = 569
           Align = alTop
           BorderSpacing.Around = 15
           Caption = 'Most Windows systems have Hyper-V installed and running to provide some features of Windows. Hyper-V can cause serious performance and stability issues with VirtualBox. Whonix-Installer can disable Hyper-V to fix this.'
@@ -276,9 +276,9 @@ object InstallerForm: TInstallerForm
         end
         object LabelConfigHyperVNotesSecurity: TLabel
           Left = 31
-          Height = 42
-          Top = 165
-          Width = 546
+          Height = 34
+          Top = 145
+          Width = 553
           Align = alTop
           BorderSpacing.Left = 31
           BorderSpacing.Right = 15
@@ -287,9 +287,9 @@ object InstallerForm: TInstallerForm
         end
         object LabelConfigHyperVNotes: TLabel
           Left = 15
-          Height = 21
-          Top = 129
-          Width = 562
+          Height = 17
+          Top = 113
+          Width = 569
           Align = alTop
           BorderSpacing.Around = 15
           Caption = 'Notes:'
@@ -297,9 +297,9 @@ object InstallerForm: TInstallerForm
         end
         object LabelConfigHyperVNotesUsability: TLabel
           Left = 31
-          Height = 63
-          Top = 211
-          Width = 546
+          Height = 51
+          Top = 183
+          Width = 553
           Align = alTop
           BorderSpacing.Left = 31
           BorderSpacing.Top = 4
@@ -309,9 +309,9 @@ object InstallerForm: TInstallerForm
         end
         object LabelConfigHyperVNotesRoot: TLabel
           Left = 31
-          Height = 21
-          Top = 278
-          Width = 546
+          Height = 17
+          Top = 238
+          Width = 553
           Align = alTop
           BorderSpacing.Left = 31
           BorderSpacing.Top = 4
@@ -321,9 +321,9 @@ object InstallerForm: TInstallerForm
         end
         object LabelConfigHyperVNotesNotRoot: TLabel
           Left = 31
-          Height = 21
-          Top = 303
-          Width = 546
+          Height = 17
+          Top = 259
+          Width = 553
           Align = alTop
           BorderSpacing.Left = 31
           BorderSpacing.Top = 4
@@ -334,9 +334,9 @@ object InstallerForm: TInstallerForm
         end
         object LabelConfigHyperVAlternatives: TLabel
           Left = 15
-          Height = 21
-          Top = 339
-          Width = 562
+          Height = 17
+          Top = 291
+          Width = 569
           Align = alTop
           BorderSpacing.Around = 15
           Caption = 'Alternatives:'
@@ -344,9 +344,9 @@ object InstallerForm: TInstallerForm
         end
         object LabelConfigHyperVAltLinuxHost: TLabel
           Left = 31
-          Height = 42
-          Top = 375
-          Width = 546
+          Height = 34
+          Top = 323
+          Width = 553
           Align = alTop
           BorderSpacing.Left = 31
           BorderSpacing.Right = 15
@@ -355,9 +355,9 @@ object InstallerForm: TInstallerForm
         end
         object LabelConfigHyperVAltKicksecureUSB: TLabel
           Left = 31
-          Height = 21
-          Top = 421
-          Width = 546
+          Height = 17
+          Top = 361
+          Width = 553
           Align = alTop
           BorderSpacing.Left = 31
           BorderSpacing.Top = 4
@@ -367,9 +367,9 @@ object InstallerForm: TInstallerForm
         end
         object LabelConfigHyperVAltWhonixHost: TLabel
           Left = 31
-          Height = 21
-          Top = 446
-          Width = 546
+          Height = 17
+          Top = 382
+          Width = 553
           Align = alTop
           BorderSpacing.Left = 31
           BorderSpacing.Top = 4
@@ -378,9 +378,9 @@ object InstallerForm: TInstallerForm
         end
         object LabelConfigHyperVLinkGreenTurtle: TLabel
           Left = 15
-          Height = 21
-          Top = 482
-          Width = 562
+          Height = 17
+          Top = 414
+          Width = 569
           Align = alTop
           BorderSpacing.Left = 15
           BorderSpacing.Top = 15
@@ -394,9 +394,9 @@ object InstallerForm: TInstallerForm
         end
         object LabelConfigHyperVLinkHostOS: TLabel
           Left = 15
-          Height = 21
-          Top = 503
-          Width = 562
+          Height = 17
+          Top = 431
+          Width = 569
           Align = alTop
           BorderSpacing.Left = 15
           BorderSpacing.Right = 15
@@ -408,9 +408,9 @@ object InstallerForm: TInstallerForm
         end
         object LabelConfigHyperVLinkKicksecure: TLabel
           Left = 15
-          Height = 21
-          Top = 524
-          Width = 562
+          Height = 17
+          Top = 448
+          Width = 569
           Align = alTop
           BorderSpacing.Left = 15
           BorderSpacing.Right = 15
@@ -423,9 +423,9 @@ object InstallerForm: TInstallerForm
         end
         object LabelConfigHyperVLinkUSBInstall: TLabel
           Left = 15
-          Height = 21
-          Top = 545
-          Width = 562
+          Height = 17
+          Top = 465
+          Width = 569
           Align = alTop
           BorderSpacing.Left = 15
           BorderSpacing.Right = 15
@@ -438,9 +438,9 @@ object InstallerForm: TInstallerForm
         end
         object LabelConfigHyperVLinkWhonixHost: TLabel
           Left = 15
-          Height = 21
-          Top = 566
-          Width = 562
+          Height = 17
+          Top = 482
+          Width = 569
           Align = alTop
           BorderSpacing.Left = 15
           BorderSpacing.Right = 15
@@ -451,94 +451,105 @@ object InstallerForm: TInstallerForm
           WordWrap = True
           OnClick = LabelConfigHyperVLinkWhonixHostClick
         end
-        object RadioButtonHyperVDoNothing: TRadioButton
+        object RadioButtonHyperVKeepCurrent: TRadioButton
           Left = 15
-          Height = 23
-          Top = 612
-          Width = 562
+          Height = 21
+          Top = 546
+          Width = 569
           Align = alTop
-          BorderSpacing.Top = 10
           BorderSpacing.Around = 15
-          Caption = 'Do Nothing'
-          Checked = True
+          Caption = 'Keep Current Setting'
+          Checked = False
           Font.Style = [fsBold]
           ParentBidiMode = False
           ParentFont = False
           TabOrder = 0
           TabStop = True
+          OnChange = RadioButtonHyperVKeepCurrentChange
         end
         object LabelHyperVDisableDesc: TLabel
           Left = 31
-          Height = 42
-          Top = 734
-          Width = 546
+          Height = 34
+          Top = 660
+          Width = 553
           Align = alTop
           BorderSpacing.Left = 16
           BorderSpacing.Around = 15
-          Caption = 'Disable Hyper-V and all Windows features that rely on it. May reduce host security.'
+          Caption = 'Disable Hyper-V and Windows features that rely on it. Reduces overall system security. Improves VirtualBox stability and performance.'
           WordWrap = True
         end
         object RadioButtonHyperVDisable: TRadioButton
           Left = 15
-          Height = 23
-          Top = 696
-          Width = 562
+          Height = 21
+          Top = 624
+          Width = 569
           Align = alTop
           BorderSpacing.Top = 10
           BorderSpacing.Around = 15
-          Caption = 'Disable Hyper-V'
+          Caption = 'Improve VirtualBox Stability (Reduces System Security)'
           Font.Style = [fsBold]
           ParentBidiMode = False
           ParentFont = False
           TabOrder = 1
+          OnChange = RadioButtonHyperVDisableChange
         end
         object LabelHyperVDoNothingDesc: TLabel
           Left = 31
-          Height = 21
-          Top = 650
-          Width = 546
+          Height = 17
+          Top = 582
+          Width = 553
           Align = alTop
           BorderSpacing.Left = 16
           BorderSpacing.Around = 15
-          Caption = 'Do not modify Hyper-V configuration. This is the safest option.'
+          Caption = 'Make no changes to Hyper-V. No security change. This is the safest option.'
           WordWrap = True
         end
         object RadioButtonHyperVReEnable: TRadioButton
           Left = 15
-          Height = 23
-          Top = 801
-          Width = 562
+          Height = 21
+          Top = 719
+          Width = 569
           Align = alTop
           BorderSpacing.Top = 10
           BorderSpacing.Around = 15
-          Caption = 'Re-enable Hyper-V security features'
+          Caption = 'Increase System Security (Reduces VirtualBox Stability)'
           Font.Style = [fsBold]
           ParentBidiMode = False
           ParentFont = False
           TabOrder = 2
+          OnChange = RadioButtonHyperVReEnableChange
         end
         object LabelHyperVReEnableDesc: TLabel
           Left = 31
-          Height = 42
-          Top = 839
-          Width = 546
+          Height = 51
+          Top = 755
+          Width = 553
           Align = alTop
           BorderSpacing.Left = 16
           BorderSpacing.Around = 15
-          Caption = 'Re-enable Hyper-V and several Windows security features that rely on it. May improve host security.'
+          Caption = 'Re-enable Hyper-V and related Windows security features. Increases system security. May reduce VirtualBox stability and performance. This is useful if Hyper-V has been previously disabled.'
           WordWrap = True
+        end
+        object LabelHyperVSelectOption: TLabel
+          Left = 15
+          Height = 17
+          Top = 514
+          Width = 569
+          Align = alTop
+          BorderSpacing.Around = 15
+          Caption = 'Scroll down and select an option below.'
         end
       end
     end
     object TabSheetInstallation: TTabSheet
       Caption = 'Installation'
-      ClientHeight = 446
-      ClientWidth = 612
+      ClientHeight = 448
+      ClientWidth = 618
       object ProgressBar: TProgressBar
         Left = 15
         Height = 30
-        Top = 97
-        Width = 582
+        Top = 89
+        Width = 588
         Align = alTop
         BorderSpacing.Top = 10
         BorderSpacing.Around = 15
@@ -548,9 +559,9 @@ object InstallerForm: TInstallerForm
       end
       object MemoOutput: TMemo
         Left = 15
-        Height = 196
-        Top = 235
-        Width = 582
+        Height = 208
+        Top = 225
+        Width = 588
         Align = alClient
         BorderSpacing.Around = 15
         Color = clBlack
@@ -563,9 +574,9 @@ object InstallerForm: TInstallerForm
       end
       object CheckBoxOutput: TCheckBox
         Left = 15
-        Height = 23
-        Top = 197
-        Width = 582
+        Height = 21
+        Top = 189
+        Width = 588
         Align = alTop
         BorderSpacing.Around = 15
         Caption = 'Show installation details'
@@ -575,8 +586,8 @@ object InstallerForm: TInstallerForm
       object PanelStatus: TPanel
         Left = 15
         Height = 30
-        Top = 152
-        Width = 582
+        Top = 144
+        Width = 588
         Align = alTop
         Alignment = taLeftJustify
         BorderSpacing.Top = 10
@@ -587,9 +598,9 @@ object InstallerForm: TInstallerForm
       end
       object LabelInstallation: TLabel
         Left = 15
-        Height = 21
+        Height = 17
         Top = 15
-        Width = 582
+        Width = 588
         Align = alTop
         BorderSpacing.Around = 15
         Caption = 'Installation Progress'
@@ -599,9 +610,9 @@ object InstallerForm: TInstallerForm
       end
       object LabelInstallationDesc: TLabel
         Left = 15
-        Height = 21
-        Top = 51
-        Width = 582
+        Height = 17
+        Top = 47
+        Width = 588
         Align = alTop
         BorderSpacing.Around = 15
         Caption = 'Please wait while Whonix is being installed.'
@@ -611,13 +622,13 @@ object InstallerForm: TInstallerForm
     end
     object TabSheetComplete: TTabSheet
       Caption = 'Complete'
-      ClientHeight = 446
-      ClientWidth = 612
+      ClientHeight = 448
+      ClientWidth = 618
       object LabelComplete: TLabel
         Left = 15
-        Height = 21
+        Height = 17
         Top = 15
-        Width = 582
+        Width = 588
         Align = alTop
         BorderSpacing.Around = 15
         Caption = 'Installation Complete'
@@ -627,9 +638,9 @@ object InstallerForm: TInstallerForm
       end
       object LabelCompleteDesc: TLabel
         Left = 15
-        Height = 21
-        Top = 51
-        Width = 582
+        Height = 17
+        Top = 47
+        Width = 588
         Align = alTop
         BorderSpacing.Around = 15
         Caption = 'Installation of Whonix has been completed.'
@@ -638,9 +649,9 @@ object InstallerForm: TInstallerForm
       end
       object LabelRecommendReboot: TLabel
         Left = 15
-        Height = 21
-        Top = 87
-        Width = 582
+        Height = 17
+        Top = 79
+        Width = 588
         Align = alTop
         BorderSpacing.Around = 15
         Caption = 'For best results, reboot the system before using Whonix.'

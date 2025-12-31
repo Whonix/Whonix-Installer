@@ -18,7 +18,7 @@ set -o nounset
 export TARGET_SYSTEM="WINDOWS"
 
 ## hardcoded
-export VERSION_FULL="LXQt-18.0.7.0.Intel_AMD64"
+export VERSION_FULL="LXQt-18.0.8.3.Intel_AMD64"
 
 export FILE_LICENSE="../deps/license.txt"
 export FILE_WHONIX_OVA="../deps/Whonix-$VERSION_FULL.ova"
