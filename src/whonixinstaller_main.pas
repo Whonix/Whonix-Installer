@@ -259,7 +259,7 @@ begin
     end;
   end;
 
-  // cleanup temp install directory befor installation starts
+  // cleanup temp install directory before installation starts
   DeleteDirectory(UnpackPath, True);
 end;
 

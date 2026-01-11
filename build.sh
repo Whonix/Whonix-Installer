@@ -174,7 +174,7 @@ mimetype "$FILE_INSTALLER_BINARY_FINAL"
 
 if [ "$TARGET_SYSTEM" = "LINUX" ]; then
   if ldd "$FILE_INSTALLER_BINARY_FINAL" | grep -q "Qt5Pas"; then
-    # this can happen if linker finds a libQt5Pas.so befor libQt5Pas.a
+    # this can happen if linker finds a libQt5Pas.so before libQt5Pas.a
     false "$0: ERROR: $FILE_INSTALLER_BINARY_FINAL depends on QT5Pas"
   fi
 fi
