@@ -52,5 +52,3 @@ jobs:
               run: su -s /bin/bash user -- ./build-dummy.sh
             - name: ShellCheck
               run: shellcheck ./*.sh
-
-# vim: sw=4
