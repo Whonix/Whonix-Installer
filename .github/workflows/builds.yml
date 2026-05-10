@@ -1,6 +1,9 @@
 name: docker build
 on: push
 
+permissions:
+  contents: read
+
 jobs:
     build:
         runs-on: ubuntu-22.04
