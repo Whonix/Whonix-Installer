@@ -4,19 +4,6 @@
 
 ## AI-Assisted
 
-## Dependabot configuration.
-##
-## Why this exists alongside developer-meta-files' own dependabot.yml:
-## this repo carries direct third-party action SHA pins in its own
-## workflows (not just '@master' references to dmf reusables), so
-## those SHAs need their own Dependabot lane. Dmf's Dependabot only
-## covers the SHA pins centralized in dmf's reusable workflows.
-##
-## Repos with zero direct third-party SHAs (e.g. genmkfile, kloak)
-## intentionally do NOT have their own dependabot.yml - dmf's
-## single config propagates SHA bumps to them via the
-## '@master'-tracked reusable.
-
 version: 2
 updates:
   - package-ecosystem: "github-actions"
@@ -27,9 +14,6 @@ updates:
     commit-message:
       prefix: "ci(deps)"
       include: scope
-    ## Bundle every action update into a single PR per cycle.
-    ## Without grouping, dependabot opens one PR per action and
-    ## 'open-pull-requests-limit: 1' silently drops the rest.
     groups:
       github-actions:
         patterns:
