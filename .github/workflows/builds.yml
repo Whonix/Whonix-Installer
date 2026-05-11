@@ -61,4 +61,6 @@ jobs:
             - name: Build Installer
               run: su -s /bin/bash user -- ./build-dummy.sh
             - name: ShellCheck
-              run: shellcheck ./*.sh
+              uses: org-ai-assisted/developer-meta-files/.github/actions/shellcheck@master
+              with:
+                paths: '.'
