@@ -1,5 +1,7 @@
 name: docker build
-on: push
+on:
+  push:
+  workflow_dispatch:
 
 permissions:
   contents: read
