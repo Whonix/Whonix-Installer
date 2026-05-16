@@ -1,0 +1,13 @@
+#!/bin/bash
+
+## Copyright (C) 2026 - 2026 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
+## AI-Assisted
+
+## This repo has no debian/control by design (Windows installer).
+## Tell genmkfile to derive the version from the nearest git tag
+## rather than parsing debian/changelog, so `genmkfile git-verify`
+## works here. See genmkfile/usr/share/genmkfile/shared.bsh and
+## make-helper-one.bsh make_get_variables.
+make_use_git_describe_for_version=true
