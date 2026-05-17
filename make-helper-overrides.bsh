@@ -10,4 +10,8 @@
 ## rather than parsing debian/changelog, so `genmkfile git-verify`
 ## works here. See genmkfile/usr/share/genmkfile/shared.bsh and
 ## make-helper-one.bsh make_get_variables.
+##
+## shellcheck disable=SC2034 -- consumed by genmkfile after this file
+## is sourced; ShellCheck cannot see the cross-file usage.
+# shellcheck disable=SC2034
 make_use_git_describe_for_version=true
