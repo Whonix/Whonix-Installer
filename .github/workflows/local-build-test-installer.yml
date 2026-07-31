@@ -15,6 +15,11 @@ concurrency:
 
 jobs:
     build:
+        ## CI runs only where we enabled it. Unset variable -> the job is
+        ## skipped, no runner is allocated, and the run stays green: upstream
+        ## and forks are never handed a red X for a lane they did not opt into.
+        ## A fork that WANTS our CI sets the same variable in its own repo.
+        if: vars.CI_ENABLED_ORG_AI_ASSISTED == 'true'
         runs-on: ubuntu-22.04
         timeout-minutes: 30
         strategy:
